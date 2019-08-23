@@ -6,14 +6,14 @@ pipeline {
 	environment {
      DOCKERHUB_USERNAME = "ravi338"
      APP_NAME = "msa-banking-aws"
-     SERVICE_NAME = "customer"
-     REPOSITORY_TAG="${DOCKERHUB_USERNAME}/${APP_NAME}-${SERVICE_NAME}:${BUILD_ID}"
+     
+     REPOSITORY_TAG="${DOCKERHUB_USERNAME}/${APP_NAME}-customer:${BUILD_ID}"
 	 }
 	stages {
 	         stage ('scm checkout') {
 			       steps {
 				    cleanWs()
-					checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'GitHub-Ravi', url: 'https://github.com/Ravikiran338/k8s-cicd-customer.git']]])
+					checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'GitHub-Ravi', url: 'https://github.com/Ravikiran338/k8s-cicd-customer']]])
 	                      }
                     }						  
 			 stage ('build') {
@@ -34,12 +34,9 @@ pipeline {
 					      export PATH=$HOME/bin:$PATH
 					      echo `kubectl get svc`
 					      echo `kubectl get nodes`
-					      envsubst < ${WORKSPACE}/${SERVICE_NAME}.yaml | kubectl apply -f -
-					      echo `kubectl get pods`
-					      echo `kubectl describe pods`
-											  
-										   '''										   
-						}
-					}
+					      envsubst < ${WORKSPACE}/customer.yaml | kubectl apply -f -
+					'''										   
 				}
 			}
+		}
+	}
